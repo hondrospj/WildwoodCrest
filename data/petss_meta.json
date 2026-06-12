@@ -2,9 +2,9 @@
   "stid": "8535901",
   "datum": "MLLW",
   "run_dir": "petss.20260611",
-  "cycle": "t12z",
-  "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/petss/prod/petss.20260611/petss.t12z.csv.tar.gz",
-  "updated_utc": "2026-06-11T22:59:32.546Z",
+  "cycle": "t18z",
+  "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/petss/prod/petss.20260611/petss.t18z.csv.tar.gz",
+  "updated_utc": "2026-06-12T05:04:53.301Z",
   "n_points": 223,
   "notes": "Ensemble mean plotted as TWL (fallback to TIDE+SURGE when TWL missing)."
 }
