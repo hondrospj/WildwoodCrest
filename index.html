@@ -8037,8 +8037,9 @@ const LIVE_START_ISO = "2026-01-01T00:00:00Z";
 const ALERT_POINT = {"lat":39.0,"lon":-74.7};
 let DISPLAY_DATUM = "MLLW";
 const DATUMS = ["MLLW","NAVD88","MSL","MHHW"];
-const OFFSET_FROM_MLLW = {"MLLW":0.0,"NAVD88":-3.02,"MSL":-2.57,"MHHW":-5.45};
-const THRESH = {"MLLW":{"minorLow":6.2,"moderateLow":7.2,"majorLow":8.2},"NAVD88":{"minorLow":3.18,"moderateLow":4.18,"majorLow":5.18},"MSL":{"minorLow":3.63,"moderateLow":4.63,"majorLow":5.63},"MHHW":{"minorLow":0.75,"moderateLow":1.75,"majorLow":2.75}};
+// Cape May Harbor uses the workbook/USGS harbor datum relationship, not the nearby Cape May ocean station datums.
+const OFFSET_FROM_MLLW = {"MLLW":0.0,"NAVD88":-2.77,"MSL":-2.41,"MHHW":-5.01};
+const THRESH = {"MLLW":{"minorLow":6.2,"moderateLow":7.2,"majorLow":8.2},"NAVD88":{"minorLow":3.43,"moderateLow":4.43,"majorLow":5.43},"MSL":{"minorLow":3.79,"moderateLow":4.79,"majorLow":5.79},"MHHW":{"minorLow":1.19,"moderateLow":2.19,"majorLow":3.19}};
 const TOP_TEN_MLLW = [{"date":"01-23-2016","ft":9.24},{"date":"10-29-2012","ft":8.67},{"date":"10-30-2012","ft":8.29},{"date":"08-28-2011","ft":7.92},{"date":"08-22-2025","ft":7.89},{"date":"10-27-2018","ft":7.77},{"date":"09-26-2000","ft":7.74},{"date":"09-10-2018","ft":7.69},{"date":"10-02-2015","ft":7.66},{"date":"10-12-2025","ft":7.65}];
 const GAUGES = [
   {
