@@ -2,151 +2,151 @@
   "station": [
     {
       "year": 2000,
-      "minor": 16,
+      "minor": 11,
       "moderate": 2,
       "major": 0
     },
     {
       "year": 2001,
-      "minor": 18,
+      "minor": 13,
       "moderate": 0,
       "major": 0
     },
     {
       "year": 2002,
-      "minor": 8,
+      "minor": 6,
       "moderate": 0,
       "major": 0
     },
     {
       "year": 2003,
-      "minor": 26,
+      "minor": 18,
       "moderate": 2,
       "major": 0
     },
     {
       "year": 2004,
-      "minor": 18,
+      "minor": 10,
       "moderate": 0,
       "major": 0
     },
     {
       "year": 2005,
-      "minor": 35,
+      "minor": 28,
       "moderate": 2,
       "major": 0
     },
     {
       "year": 2006,
-      "minor": 24,
-      "moderate": 3,
+      "minor": 21,
+      "moderate": 2,
       "major": 0
     },
     {
       "year": 2007,
-      "minor": 23,
+      "minor": 20,
       "moderate": 0,
       "major": 0
     },
     {
       "year": 2008,
-      "minor": 13,
+      "minor": 12,
       "moderate": 1,
       "major": 0
     },
     {
       "year": 2009,
-      "minor": 19,
-      "moderate": 6,
+      "minor": 21,
+      "moderate": 4,
       "major": 0
     },
     {
       "year": 2010,
-      "minor": 44,
+      "minor": 36,
       "moderate": 0,
       "major": 0
     },
     {
       "year": 2011,
-      "minor": 38,
+      "minor": 31,
       "moderate": 1,
       "major": 0
     },
     {
       "year": 2012,
-      "minor": 9,
+      "minor": 7,
       "moderate": 0,
       "major": 2
     },
     {
       "year": 2013,
-      "minor": 3,
+      "minor": 2,
       "moderate": 0,
       "major": 0
     },
     {
       "year": 2014,
-      "minor": 8,
+      "minor": 6,
       "moderate": 0,
       "major": 0
     },
     {
       "year": 2015,
-      "minor": 13,
-      "moderate": 2,
+      "minor": 11,
+      "moderate": 1,
       "major": 0
     },
     {
       "year": 2016,
-      "minor": 35,
-      "moderate": 6,
+      "minor": 33,
+      "moderate": 3,
       "major": 1
     },
     {
       "year": 2017,
-      "minor": 43,
+      "minor": 38,
       "moderate": 2,
       "major": 0
     },
     {
       "year": 2018,
-      "minor": 56,
+      "minor": 47,
       "moderate": 2,
       "major": 0
     },
     {
       "year": 2019,
-      "minor": 60,
-      "moderate": 3,
+      "minor": 54,
+      "moderate": 2,
       "major": 0
     },
     {
       "year": 2020,
-      "minor": 57,
+      "minor": 49,
       "moderate": 1,
       "major": 0
     },
     {
       "year": 2023,
-      "minor": 59,
+      "minor": 51,
       "moderate": 2,
       "major": 0
     },
     {
       "year": 2024,
-      "minor": 77,
-      "moderate": 4,
+      "minor": 70,
+      "moderate": 3,
       "major": 0
     },
     {
       "year": 2025,
-      "minor": 57,
+      "minor": 46,
       "moderate": 3,
       "major": 0
     },
     {
       "year": 2026,
-      "minor": 22,
+      "minor": 19,
       "moderate": 0,
       "major": 0
     }
