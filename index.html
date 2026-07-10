@@ -3496,79 +3496,37 @@ function normalizePetssJsonToPoints(json){
 
 async function fetchFirstOkJson(urls){
   const errs = [];
-  for(const u of urls){
-    try{
-      const res = await fetch(`${u}?v=${Date.now()}`, { cache:"no-store" });
-      if(!res.ok) throw new Error(`HTTP ${res.status}`);
-      const j = await res.json();
-      return { url: u, json: j };
-    }catch(e){
-      errs.push(`${u} (${e?.message || e})`);
+  const attempts = 2;
+  for(let attempt = 1; attempt <= attempts; attempt++){
+    for(const u of urls){
+      try{
+        const res = await fetch(`${u}?v=${Date.now()}`, { cache:"no-store" });
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const j = await res.json();
+        return { url: u, json: j };
+      }catch(e){
+        errs.push(`${u} attempt ${attempt} (${e?.message || e})`);
+      }
     }
+    if(attempt < attempts) await new Promise(resolve => setTimeout(resolve, 350));
   }
   throw new Error("PETSS JSON not found. Tried: " + errs.join(" | "));
 }
 
-async function fetchNOAAHourlyPredictions({ station, beginYMD, endYMD, datum="MLLW" }){
-  const url = new URL("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter");
-  url.searchParams.set("product","predictions");
-  url.searchParams.set("application", COOPS_APP || "web");
-  url.searchParams.set("begin_date", beginYMD);
-  url.searchParams.set("end_date", endYMD);
-  url.searchParams.set("datum", datum);
-  url.searchParams.set("station", station);
-  url.searchParams.set("time_zone","gmt");
-  url.searchParams.set("units","english");
-  url.searchParams.set("interval","h");
-  url.searchParams.set("format","json");
+async function fetchPETSSForecast_MLLW(){
+  const { url, json } = await fetchFirstOkJson(PETSS_JSON_CANDIDATES);
 
-  const res = await fetchWithTimeout(url.toString(), { cache:"no-store" }, 8000);
-  if(!res.ok) throw new Error("NOAA hourly predictions failed " + res.status);
-  const j = await res.json();
-  const preds = j?.predictions || [];
-  return preds
-    .map(p => ({
-      t: new Date(String(p.t).replace(" ", "T") + "Z").toISOString(),
-      ft: Number(p.v)
-    }))
-    .filter(p => p.t && Number.isFinite(p.ft))
-    .sort((a,b)=> new Date(a.t) - new Date(b.t));
-}
+  const issuedTime =
+    json?.model_time_utc ||
+    json?.issued_utc ||
+    json?.fetched_utc ||
+    json?.issuedTime ||
+    null;
 
-async function fetchPETSSForecast_MLLW({ hours = 48 } = {}){
-  try{
-    const { url, json } = await fetchFirstOkJson(PETSS_JSON_CANDIDATES);
+  const ptsAll = normalizePetssJsonToPoints(json);
+  if(!ptsAll.length) throw new Error("PETSS JSON loaded but contained no usable forecast points");
 
-    const issuedTime =
-      json?.model_time_utc ||
-      json?.issued_utc ||
-      json?.fetched_utc ||
-      json?.issuedTime ||
-      null;
-
-    const ptsAll = normalizePetssJsonToPoints(json);
-    if(!ptsAll.length) throw new Error("PETSS JSON loaded but contained no usable forecast points");
-
-    return { issuedTime, points: ptsAll, urlUsed: url };
-  }catch(localErr){
-    console.warn("PETSS/local forecast unavailable; using NOAA hourly tide prediction fallback:", localErr);
-
-    const start = new Date();
-    const end = new Date(start.getTime() + Math.max(1, hours) * 3600 * 1000);
-    const points = await fetchNOAAHourlyPredictions({
-      station: COOPS_STATION,
-      beginYMD: ymdCompactFromISO(start.toISOString()),
-      endYMD: ymdCompactFromISO(end.toISOString()),
-      datum: "MLLW"
-    });
-
-    return {
-      issuedTime:null,
-      points,
-      urlUsed:"NOAA CO-OPS hourly predictions fallback",
-      sourceNote:"PETSS/local JSON unavailable; displayed astronomical NOAA tide prediction fallback."
-    };
-  }
+  return { issuedTime, points: ptsAll, urlUsed: url };
 }
 
 
@@ -7908,7 +7866,7 @@ async function updateTimeseries(){
   }
 
   try{
-    const { points } = await fetchPETSSForecast_MLLW({ hours: 72 });
+    const { points } = await fetchPETSSForecast_MLLW();
     STATE.pred72Mllw = points || [];
   }catch(e){
     console.warn("Forecast failed:", e);
