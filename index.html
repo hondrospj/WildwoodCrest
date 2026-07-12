@@ -105,8 +105,8 @@ option{
   font-size:32px;   
   font-weight:950;
   letter-spacing:.2px;
-  line-height:1.16;
-  padding-bottom:2px;
+  line-height:1.22;
+  padding-bottom:4px;
 }
 
     .pill{
@@ -1687,8 +1687,8 @@ a.brand *{
     }
     .name{
       font-size:clamp(23px, 3vw, 31px);
-      line-height:1.16;
-      padding-bottom:2px;
+      line-height:1.22;
+      padding-bottom:4px;
     }
     .topRight{
       align-items:flex-start;
@@ -2114,6 +2114,7 @@ a.brand *{
       font-size:11px;
       font-weight:900;
       line-height:1.1;
+      white-space:nowrap;
     }
     .doyYearCell.isOff .doyYearSwatchMini,
     .doyYearCell.isOff .doyYearValue{opacity:.55}
@@ -6158,7 +6159,7 @@ function buildSeaLevelDatasets(labels, state){
   }
 
   datasets.push({
-    label:"Forecast baseline",
+    label:"Current Trend",
     data:labels.map(m => {
       const x = decimalYearFromMonth(m);
       return state.regression.intercept + state.regression.slope * x;
@@ -7091,12 +7092,13 @@ function renderDOYYearTable(years, curYear, selected){
     const isCurrent = y === curYear && !isPast;
     const visible = selectedSet.has(y);
     const total = formatFloodStat(doyYearTotalForControl(y, curYear)) || "0";
+    const totalLabel = `${total} ${total === "1" ? "flood" : "floods"}`;
     const color = isPast ? "rgba(239,68,68,1)" : (isCurrent ? "rgba(239,68,68,1)" : doyYearColor(y, minYear, maxYear, .84));
     return `
-      <button class="doyYearCell${visible ? "" : " isOff"}" type="button" data-doy-year="${y}" aria-pressed="${visible ? "true" : "false"}" title="${visible ? "Hide" : "Show"} ${y}">
+      <button class="doyYearCell${visible ? "" : " isOff"}" type="button" data-doy-year="${y}" aria-pressed="${visible ? "true" : "false"}" title="${visible ? "Hide" : "Show"} ${y}; ${totalLabel}">
         <span class="doyYearCheck" aria-hidden="true"></span>
         <span class="doyYearLabel"><span class="doyYearSwatchMini" style="--doy-year-color:${color}"></span>${y}</span>
-        <span class="doyYearValue">${total}</span>
+        <span class="doyYearValue">${totalLabel}</span>
       </button>
     `;
   }).join("");
@@ -8013,7 +8015,7 @@ const monthAvgTotalLabelPlugin = {
       const labelValue = MONTH_VIEW === "total" && Number.isFinite(trueTotal) ? trueTotal : visibleTotal;
       if(!visibleCount || !Number.isFinite(labelValue) || labelValue <= 0 || x === null) continue;
 
-      const y = Math.max(chart.chartArea.top + 14, yScale.getPixelForValue(labelValue) - 5);
+      const y = Math.max(chart.chartArea.top + 22, yScale.getPixelForValue(labelValue) - 18);
       const text = formatMonthAverage(labelValue);
       ctx.lineWidth = 4;
       ctx.strokeStyle = "rgba(11,18,32,.96)";
@@ -8088,7 +8090,7 @@ function ensureMonthAvgChart(){
         y:{
           stacked:true,
           title:{display:true, text:"Floods", color:"rgba(169,182,211,.9)", font:{weight:"900"}},
-          grace:"12%",
+          grace:"30%",
           ticks:{
             color:"rgba(169,182,211,.9)",
 
@@ -8958,7 +8960,7 @@ setInterval(async ()=>{
     ["Observations", "Observations and forecast", "The solid line is measured water. The forecast line shows what water levels may do over the next few days."],
     ["Flooding throughout the year", "Flooding throughout the year", "Each line counts floods as the year goes on. The year grid lists each annual total and controls which years are visible."],
     ["Flooding over the years", "Flooding over the years", "This compares yearly flood counts so you can see whether flooding is becoming more common."],
-    ["Sea Level Trends", "Sea level trends", "Monthly mean sea level is the measured history. Historical trend is the fitted past pattern, while forecast baseline and the other scenarios extend possible future sea level."],
+    ["Sea Level Trends", "Sea level trends", "Monthly mean sea level is the measured history. Historical trend is the fitted past pattern, while Current Trend and the other scenarios extend possible future sea level."],
     ["Average number of floods per month", "Average floods by month", "This shows which months usually have more coastal flooding in the historic record."],
     ["Historic flooding filter", "Historic flooding filter", "Choose a water-height and date range to look up past flood events."],
     ["NJ tide gauge map", "NJ tide gauge map", "This marks the tide gauge used for this dashboard, so the chart data has a place on the map."]
@@ -9122,7 +9124,7 @@ setInterval(async ()=>{
         byLabel.set(text, {...item, text, dataset});
       }
     }
-    const wanted = ["Monthly mean sea level", "Forecast baseline", "Historical trend", "Low", "Intermediate", "High"];
+    const wanted = ["Monthly mean sea level", "Current Trend", "Historical trend", "Low", "Intermediate", "High"];
     const ordered = wanted.map(label => byLabel.get(label)).filter(Boolean);
     for(const item of byLabel.values()){
       if(!wanted.includes(item.text)) ordered.push(item);
