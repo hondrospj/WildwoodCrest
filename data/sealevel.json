@@ -4,30 +4,35 @@
   "parameter": "72279",
   "datum": "NAVD88",
   "source": "USGS daily mean",
-  "updated_utc": "2026-06-30T15:23:57.221Z",
+  "qualityControl": {
+    "minimumDailyValuesPerMonth": 20,
+    "excludedMonths": [],
+    "method": "Exclude incomplete USGS months and configured station discontinuities from trend analysis"
+  },
+  "updated_utc": "2026-07-23T13:41:01.529Z",
   "regression": {
-    "slopeFtPerYear": 0.020804405104562287,
-    "interceptFt": -41.96285486500814,
-    "monthlyPoints": 293,
+    "slopeFtPerYear": 0.02078958652562157,
+    "interceptFt": -41.93279248277854,
+    "monthlyPoints": 294,
     "method": "deseasonalized_monthly_mean_linear_regression",
     "rawRegression": {
-      "slopeFtPerYear": 0.020114203632941217,
-      "interceptFt": -40.57288833234758,
-      "monthlyPoints": 293
+      "slopeFtPerYear": 0.020168850477268213,
+      "interceptFt": -40.68269254208002,
+      "monthlyPoints": 294
     },
     "seasonalAdjustmentsFt": {
-      "01": -0.310127,
-      "02": -0.355543,
-      "03": -0.177794,
-      "04": -0.066194,
-      "05": 0.03566,
-      "06": 0.104285,
-      "07": 0.084306,
-      "08": 0.168758,
-      "09": 0.395778,
-      "10": 0.330976,
-      "11": -0.009339,
-      "12": -0.238752
+      "10": 0.330728,
+      "11": -0.009593,
+      "12": -0.239011,
+      "01": -0.310391,
+      "02": -0.355784,
+      "03": -0.178069,
+      "04": -0.066469,
+      "05": 0.035402,
+      "06": 0.104071,
+      "07": 0.083628,
+      "08": 0.168541,
+      "09": 0.395539
     }
   },
   "daily": [
@@ -34714,14 +34719,101 @@
     {
       "date": "2026-06-29",
       "ft": 0.41
+    },
+    {
+      "date": "2026-06-30",
+      "ft": 0.25
+    },
+    {
+      "date": "2026-07-01",
+      "ft": -0.12
+    },
+    {
+      "date": "2026-07-02",
+      "ft": -0.23
+    },
+    {
+      "date": "2026-07-03",
+      "ft": -0.13
+    },
+    {
+      "date": "2026-07-04",
+      "ft": 0.21
+    },
+    {
+      "date": "2026-07-05",
+      "ft": 0.3
+    },
+    {
+      "date": "2026-07-06",
+      "ft": 0.65
+    },
+    {
+      "date": "2026-07-07",
+      "ft": 0.87
+    },
+    {
+      "date": "2026-07-08",
+      "ft": 0.64
+    },
+    {
+      "date": "2026-07-09",
+      "ft": 0.52
+    },
+    {
+      "date": "2026-07-10",
+      "ft": 0.44
+    },
+    {
+      "date": "2026-07-11",
+      "ft": 0.65
+    },
+    {
+      "date": "2026-07-12",
+      "ft": 0.63
+    },
+    {
+      "date": "2026-07-13",
+      "ft": 0.33
+    },
+    {
+      "date": "2026-07-14",
+      "ft": -0.12
+    },
+    {
+      "date": "2026-07-15",
+      "ft": -0.32
+    },
+    {
+      "date": "2026-07-16",
+      "ft": 0.27
+    },
+    {
+      "date": "2026-07-17",
+      "ft": 0.24
+    },
+    {
+      "date": "2026-07-18",
+      "ft": 0.14
+    },
+    {
+      "date": "2026-07-19",
+      "ft": 0.09
+    },
+    {
+      "date": "2026-07-20",
+      "ft": 0.26
+    },
+    {
+      "date": "2026-07-21",
+      "ft": 0.28
+    },
+    {
+      "date": "2026-07-22",
+      "ft": 0.17
     }
   ],
   "monthly": [
-    {
-      "month": "2000-05",
-      "ft": 0.21,
-      "days": 2
-    },
     {
       "month": "2000-06",
       "ft": -0.3077,
@@ -34828,11 +34920,6 @@
       "days": 24
     },
     {
-      "month": "2002-03",
-      "ft": -0.5967,
-      "days": 15
-    },
-    {
       "month": "2002-04",
       "ft": -0.5943,
       "days": 30
@@ -34866,21 +34953,6 @@
       "month": "2002-10",
       "ft": 0.1748,
       "days": 25
-    },
-    {
-      "month": "2002-11",
-      "ft": -0.398,
-      "days": 5
-    },
-    {
-      "month": "2002-12",
-      "ft": -0.4543,
-      "days": 14
-    },
-    {
-      "month": "2003-01",
-      "ft": -0.1467,
-      "days": 9
     },
     {
       "month": "2003-02",
@@ -34923,11 +34995,6 @@
       "days": 30
     },
     {
-      "month": "2003-10",
-      "ft": -0.296,
-      "days": 15
-    },
-    {
       "month": "2003-11",
       "ft": -0.3787,
       "days": 30
@@ -34951,11 +35018,6 @@
       "month": "2004-03",
       "ft": -0.3916,
       "days": 31
-    },
-    {
-      "month": "2004-04",
-      "ft": -0.2393,
-      "days": 15
     },
     {
       "month": "2004-05",
@@ -35036,11 +35098,6 @@
       "month": "2005-08",
       "ft": -0.0196,
       "days": 24
-    },
-    {
-      "month": "2005-09",
-      "ft": 0.0189,
-      "days": 18
     },
     {
       "month": "2005-10",
@@ -35483,11 +35540,6 @@
       "days": 26
     },
     {
-      "month": "2014-01",
-      "ft": -0.4942,
-      "days": 19
-    },
-    {
       "month": "2014-02",
       "ft": -0.6408,
       "days": 24
@@ -35546,11 +35598,6 @@
       "month": "2015-01",
       "ft": -0.6681,
       "days": 27
-    },
-    {
-      "month": "2015-02",
-      "ft": -0.2037,
-      "days": 16
     },
     {
       "month": "2015-03",
@@ -36229,45 +36276,13 @@
     },
     {
       "month": "2026-06",
-      "ft": 0.241,
-      "days": 29
-    }
-  ],
-  "regressionRaw": {
-    "slopeFtPerYear": 0.020114203632941217,
-    "interceptFt": -40.57288833234758,
-    "monthlyPoints": 293
-  },
-  "regressionDeseasonalized": {
-    "slopeFtPerYear": 0.020804405104562287,
-    "interceptFt": -41.96285486500814,
-    "monthlyPoints": 293,
-    "method": "deseasonalized_monthly_mean_linear_regression",
-    "rawRegression": {
-      "slopeFtPerYear": 0.020114203632941217,
-      "interceptFt": -40.57288833234758,
-      "monthlyPoints": 293
+      "ft": 0.2413,
+      "days": 30
     },
-    "seasonalAdjustmentsFt": {
-      "01": -0.310127,
-      "02": -0.355543,
-      "03": -0.177794,
-      "04": -0.066194,
-      "05": 0.03566,
-      "06": 0.104285,
-      "07": 0.084306,
-      "08": 0.168758,
-      "09": 0.395778,
-      "10": 0.330976,
-      "11": -0.009339,
-      "12": -0.238752
+    {
+      "month": "2026-07",
+      "ft": 0.2623,
+      "days": 22
     }
-  },
-  "trendMethod": "deseasonalized_monthly_mean_linear_regression",
-  "regression_updated_utc": "2026-07-01T02:02:03.893342+00:00",
-  "qualityControl": {
-    "minimumDailyValuesPerMonth": 20,
-    "excludedMonths": [],
-    "method": "Exclude incomplete USGS months and configured station discontinuities from trend analysis"
-  }
+  ]
 }
