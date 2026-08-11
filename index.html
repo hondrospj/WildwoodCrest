@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cape May Harbor Coastal Flooding Dashboard</title>
+  <title>Wildwood Crest Coastal Flooding Dashboard</title>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
@@ -3439,7 +3439,7 @@ function unitText(){
 }
 
 function renderGaugeStaticText(){
-  const dashboardTitle = "Cape May Harbor Coastal Flooding Dashboard";
+  const dashboardTitle = "Wildwood Crest Coastal Flooding Dashboard";
   document.title = dashboardTitle;
   if(brandKickerEl) brandKickerEl.textContent = `${DEFAULT_GAUGE_ID} · ${GAUGE_DISPLAY_NAME}, NJ`;
   if(brandNameEl) brandNameEl.textContent = dashboardTitle;
@@ -8803,7 +8803,7 @@ refreshDOYFromHistory();
 }
 
 
-const GAUGE_DISPLAY_NAME = "Cape May Harbor at Cape May";
+const GAUGE_DISPLAY_NAME = "Wildwood Crest";
 const GAUGE_TYPE = "USGS";
 const JURISDICTION_SOURCE = "Cape May";
 const DEFAULT_GAUGE_ID = "01411390";
@@ -8819,7 +8819,7 @@ const NOAA_STATION_TIDECLOCK = "8536110";
 const CREST_WINDOW_HOURS = 2;
 const REQUIRE_WITHIN_HOURS = 1;
 const LIVE_START_ISO = "2026-01-01T00:00:00Z";
-const ALERT_POINT = {"lat":39.0,"lon":-74.7};
+const ALERT_POINT = {"lat":38.9731133,"lon":-74.837918};
 let DISPLAY_DATUM = "MLLW";
 const DATUMS = ["MLLW","NAVD88","MSL","MHHW"];
 // Cape May Harbor uses the workbook/USGS harbor datum relationship, not the nearby Cape May ocean station datums.
@@ -8927,13 +8927,13 @@ const GAUGES = [
     "repo": "CapeMay"
   },
   {
-    "name": "Cape May Harbor at Cape May",
+    "name": "Wildwood Crest",
     "agency": "USGS",
     "id": "01411390",
     "lat": 38.948333,
     "lon": -74.888889,
-    "url": "https://hondrospj.github.io/CapeMayHarbor/",
-    "repo": "CapeMayHarbor"
+    "url": "https://hondrospj.github.io/WildwoodCrest/",
+    "repo": "WildwoodCrest"
   },
   {
     "name": "Delaware River (Washington Street)",
