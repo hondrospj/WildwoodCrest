@@ -4,6 +4,11 @@ name: Update PETSS Forecast
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/update_petss_forecast.js
+      - .github/workflows/update_petss_forecast.yml
   schedule:
     # Every 3 hours (UTC)
     - cron: "15 */3 * * *"
@@ -14,8 +19,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: update-petss-forecast
-  cancel-in-progress: true
+  group: wildwoodcrest-data-update
+  cancel-in-progress: false
 
 jobs:
   update-petss:
@@ -23,6 +28,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -45,6 +51,9 @@ jobs:
           node -v
           pwd
           node tools/update_petss_forecast.js
+
+      - name: Validate forecast and dashboard contracts
+        run: node tools/test_dashboard.cjs
 
       - name: Commit & push if changed
         id: forecast_commit

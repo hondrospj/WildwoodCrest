@@ -18,7 +18,7 @@ const fs = require("fs");
 const path = require("path");
 const os = require("os");
 const https = require("https");
-const { execSync } = require("child_process");
+const { execFileSync } = require("child_process");
 
 const BASE = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/petss/prod/";
 
@@ -34,43 +34,13 @@ function ensureDir(p) {
 }
 
 function fetchText(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, { headers: { "User-Agent": "petss-forecast-updater" } }, (res) => {
-      // handle redirects
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return resolve(fetchText(res.headers.location));
-      }
-      if (res.statusCode !== 200) {
-        return reject(new Error(`HTTP ${res.statusCode} for ${url}`));
-      }
-      let data = "";
-      res.setEncoding("utf8");
-      res.on("data", (chunk) => (data += chunk));
-      res.on("end", () => resolve(data));
-    }).on("error", reject);
-  });
+  // NOMADS intermittently resets HTTP/2 streams. curl's HTTP/1.1 path is bounded
+  // and retries transient network failures on both macOS and GitHub's Ubuntu runner.
+  return execFileSync("curl",["--http1.1","--fail","--silent","--show-error","--location","--retry","2","--max-time","45",url],{encoding:"utf8",maxBuffer:8*1024*1024});
 }
 
 function downloadFile(url, outPath) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(outPath);
-    https.get(url, { headers: { "User-Agent": "petss-forecast-updater" } }, (res) => {
-      // redirects
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        file.close(() => fs.unlinkSync(outPath));
-        return resolve(downloadFile(res.headers.location, outPath));
-      }
-      if (res.statusCode !== 200) {
-        file.close(() => fs.unlinkSync(outPath));
-        return reject(new Error(`HTTP ${res.statusCode} for ${url}`));
-      }
-      res.pipe(file);
-      file.on("finish", () => file.close(resolve));
-    }).on("error", (err) => {
-      try { file.close(() => fs.unlinkSync(outPath)); } catch (_) {}
-      reject(err);
-    });
-  });
+  execFileSync("curl",["--http1.1","--fail","--silent","--show-error","--location","--retry","2","--max-time","45",url,"--output",outPath],{stdio:"inherit"});
 }
 
 function listLatestProdDir(html) {
@@ -139,10 +109,11 @@ function parseNomadsStationCsv(text, stid) {
   }
 
   function parseNum(s) {
+    if(s == null || String(s).trim() === "") return null;
     const v = Number(String(s).trim());
     if (!Number.isFinite(v)) return null;
     // NOMADS uses 9999.000 as missing
-    if (Math.abs(v - 9999) < 1e-6) return null;
+    if (Math.abs(v) >= 999) return null;
     return v;
   }
 
@@ -208,7 +179,8 @@ async function main() {
   const stid = process.env.PETSS_STID?.trim();
   const datum = (process.env.PETSS_DATUM || "MLLW").trim();
 
-  if (!stid) die("PETSS_STID is required (e.g., 8531804).");
+  if (!/^\d{7}$/.test(stid || "")) die("PETSS_STID must be a seven-digit NOAA station identifier.");
+  if(datum !== "MLLW") die("Station CSV levels are MLLW; relabeling them is not a datum conversion.");
 
   log("Running PETSS forecast updater via NOMADS…");
   log("STID:", stid);
@@ -217,48 +189,40 @@ async function main() {
 
   // 1) Find latest run dir
   const baseHtml = await fetchText(BASE);
-  const runDir = listLatestProdDir(baseHtml);
-  log("Latest PETSS prod dir:", runDir);
-
-  // 2) Choose cycle tarball
-  const runHtml = await fetchText(BASE + runDir);
-  const tarball = chooseCycleTarball(runHtml);
-  log("Chosen cycle tarball:", tarball);
-
-  const cycleMatch = tarball.match(/petss\.(t\d{2}z)\.csv\.tar\.gz/);
-  const cycle = cycleMatch ? cycleMatch[1] : "unknown";
-
-  const url = BASE + runDir + tarball;
-  log("Downloading:", url);
-
-  // 3) Download + extract
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "petss-"));
-  const tgzPath = path.join(tmp, tarball);
-  await downloadFile(url, tgzPath);
-
-  const extractDir = path.join(tmp, "extract");
-  ensureDir(extractDir);
-
-  // Use system tar (available on ubuntu-latest)
-  execSync(`tar -xzf "${tgzPath}" -C "${extractDir}"`, { stdio: "inherit" });
-
-  // 4) Locate station file
-  const stationFile = findFileRecursive(extractDir, `${stid}.csv`);
-  if (!stationFile) {
-    // Dump a quick directory tree depth 3 to help if this ever changes
-    const listing = execSync(`find "${extractDir}" -maxdepth 4 -type f | head -n 200`, { encoding: "utf8" });
-    throw new Error(`Could not find ${stid}.csv under extract dir.\nSample files:\n${listing}`);
+  const runDirs = [...new Set([...baseHtml.matchAll(/petss\.(\d{8})\//g)].map(m=>`petss.${m[1]}/`))].sort().reverse().slice(0,3);
+  let selected;
+  const failures = [];
+  for(const runDir of runDirs){
+    let runHtml;
+    try{runHtml = await fetchText(BASE + runDir);}catch(e){failures.push(String(e));continue;}
+    for(const hour of ["18","12","06","00"]){
+      const cycle = `t${hour}z`, tarball = `petss.${cycle}.csv.tar.gz`;
+      if(!runHtml.includes(tarball)) continue;
+      const date = runDir.match(/\d{8}/)[0];
+      const issuedTime = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}T${hour}:00:00Z`;
+      if(Date.now() - Date.parse(issuedTime) > 48*3600000) continue;
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(),"crest-petss-"));
+      const tgz = path.join(tmp,tarball), url = BASE + runDir + tarball;
+      try{
+        log("Trying complete station run:",url);
+        await downloadFile(url,tgz);
+        const names = execFileSync("tar",["-tzf",tgz],{encoding:"utf8",maxBuffer:4*1024*1024}).split(/\r?\n/);
+        const member = names.find(n=>n.split("/").at(-1) === `${stid}.csv`);
+        if(!member || member.startsWith("/") || member.split("/").includes("..")) throw new Error("Missing or invalid station member");
+        const stationText = execFileSync("tar",["-xOzf",tgz,member],{encoding:"utf8",maxBuffer:8*1024*1024});
+        const rows = parseNomadsStationCsv(stationText,stid);
+        if(Date.parse(rows.at(-1).t) < Date.now()+72*3600000) throw new Error("Run does not cover the next 72 hours");
+        selected = {runDir,cycle,url,issuedTime,stationText,rows};
+      }catch(e){failures.push(`${url}: ${e.message}`);}
+      finally{fs.rmSync(tmp,{recursive:true,force:true});}
+      if(selected) break;
+    }
+    if(selected) break;
   }
-  log("Station CSV file:", stationFile);
-
-  const stationText = fs.readFileSync(stationFile, "utf8");
-
-  // Always write a debug snapshot of the station file (small and helpful)
+  if(!selected) throw new Error("No fresh complete PETSS station run; existing forecast preserved. " + failures.join(" | "));
+  const {runDir,cycle,url,issuedTime,stationText,rows} = selected;
   ensureDir("data");
-  fs.writeFileSync("data/petss_station_debug.txt", stationText.split(/\r?\n/).slice(0, 250).join("\n") + "\n", "utf8");
-
-  // 5) Parse NOMADS station CSV and keep ensemble mean TWL
-  const rows = parseNomadsStationCsv(stationText, stid);
+  fs.writeFileSync("data/petss_station_debug.txt",stationText.split(/\r?\n/).slice(0,250).join("\n")+"\n","utf8");
 
   // 6) Write outputs
   const outCsv = [
@@ -279,6 +243,8 @@ async function main() {
     run_dir: runDir.replace(/\/$/, ""),
     cycle,
     source_url: url,
+    model_time_utc: issuedTime,
+    valid_through_utc: rows.at(-1).t,
     updated_utc: new Date().toISOString(),
     n_points: rows.length,
     notes: "Ensemble mean plotted as TWL (fallback to TIDE+SURGE when TWL missing)."
@@ -288,10 +254,11 @@ async function main() {
   log(`Wrote ${rows.length} points → data/petss_forecast.csv + .json + meta`);
 }
 
-main().catch((e) => {
+if(require.main === module) main().catch((e) => {
   try {
     ensureDir("data");
     fs.writeFileSync("data/petss_error.txt", String(e && (e.stack || e.message || e)) + "\n", "utf8");
   } catch (_) {}
   die("PETSS update failed:", e);
 });
+module.exports = {parseNomadsStationCsv, listLatestProdDir, chooseCycleTarball};

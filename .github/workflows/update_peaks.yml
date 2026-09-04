@@ -3,14 +3,17 @@ name: Peaks Cache
 on:
   workflow_dispatch:
     inputs:
-      backfill_from:
-        description: "Optional: backfill from year (e.g., 2000)"
+      backfill:
+        description: "Rebuild Lewes history and fill the early USGS record"
         required: false
-        type: string
-      backfill_to:
-        description: "Optional: backfill to year (e.g., 2026)"
-        required: false
-        type: string
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - tools/update_history.js
+      - tools/history_data.js
+      - .github/workflows/update_peaks.yml
 
   # Run once per day. GitHub schedules are UTC.
   # This runs at 6:17 AM UTC, which is 1:17 AM EST / 2:17 AM EDT.
@@ -19,9 +22,11 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: peaks-cache
+  group: wildwoodcrest-data-update
   cancel-in-progress: false
 
 jobs:
@@ -29,6 +34,9 @@ jobs:
     name: Update peaks cache
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout
@@ -43,15 +51,17 @@ jobs:
 
       - name: Run updater
         shell: bash
+        env:
+          BACKFILL: ${{ inputs.backfill || false }}
         run: |
-          BACKFILL_FROM="${{ github.event.inputs.backfill_from || '' }}"
-          BACKFILL_TO="${{ github.event.inputs.backfill_to || '' }}"
-
-          if [[ -n "$BACKFILL_FROM" && -n "$BACKFILL_TO" ]]; then
-            node tools/update_peaks_navd88.js --backfill-from="$BACKFILL_FROM" --backfill-to="$BACKFILL_TO"
+          if [[ "$BACKFILL" == "true" ]]; then
+            node tools/update_history.js --backfill
           else
-            node tools/update_peaks_navd88.js
+            node tools/update_history.js
           fi
+
+      - name: Validate history and dashboard contracts
+        run: node tools/test_dashboard.cjs
 
       - name: Commit and push if changed
         shell: bash
@@ -59,7 +69,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/peaks_navd88.json
+          git add data/peaks_navd88.json data/annual_flood_counts.json
 
           if git diff --cached --quiet; then
             echo "No changes."
@@ -69,3 +79,10 @@ jobs:
           git commit -m "Update peaks cache"
           git pull --rebase
           git push
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v5

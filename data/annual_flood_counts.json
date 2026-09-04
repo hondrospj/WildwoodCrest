@@ -1,522 +1,987 @@
 {
-  "station": [
+  "schema": "shorelysafe-annual-flood-counts-v3",
+  "generatedAtUtc": "2026-09-04T14:48:15.633Z",
+  "datum": "NAVD88",
+  "thresholdsNAVD88": {
+    "minorLow": 3.43,
+    "moderateLow": 4.43,
+    "majorLow": 5.43
+  },
+  "station": "01411390",
+  "firstYear": 1919,
+  "lastYear": 2026,
+  "counts": [
     {
-      "year": 2000,
-      "minor": 11,
-      "moderate": 2,
-      "major": 0
-    },
-    {
-      "year": 2001,
-      "minor": 13,
-      "moderate": 0,
-      "major": 0
-    },
-    {
-      "year": 2002,
-      "minor": 6,
-      "moderate": 0,
-      "major": 0
-    },
-    {
-      "year": 2003,
-      "minor": 18,
-      "moderate": 2,
-      "major": 0
-    },
-    {
-      "year": 2004,
-      "minor": 10,
-      "moderate": 0,
-      "major": 0
-    },
-    {
-      "year": 2005,
-      "minor": 28,
-      "moderate": 2,
-      "major": 0
-    },
-    {
-      "year": 2006,
-      "minor": 21,
-      "moderate": 2,
-      "major": 0
-    },
-    {
-      "year": 2007,
-      "minor": 20,
-      "moderate": 0,
-      "major": 0
-    },
-    {
-      "year": 2008,
-      "minor": 12,
-      "moderate": 1,
-      "major": 0
-    },
-    {
-      "year": 2009,
-      "minor": 21,
-      "moderate": 4,
-      "major": 0
-    },
-    {
-      "year": 2010,
-      "minor": 36,
-      "moderate": 0,
-      "major": 0
-    },
-    {
-      "year": 2011,
-      "minor": 31,
-      "moderate": 1,
-      "major": 0
-    },
-    {
-      "year": 2012,
-      "minor": 7,
-      "moderate": 0,
-      "major": 2
-    },
-    {
-      "year": 2013,
+      "year": 1919,
       "minor": 2,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 334,
+      "partial": true
     },
     {
-      "year": 2014,
-      "minor": 6,
-      "moderate": 0,
-      "major": 0
-    },
-    {
-      "year": 2015,
-      "minor": 11,
-      "moderate": 1,
-      "major": 0
-    },
-    {
-      "year": 2016,
-      "minor": 33,
-      "moderate": 3,
-      "major": 1
-    },
-    {
-      "year": 2017,
-      "minor": 38,
-      "moderate": 2,
-      "major": 0
-    },
-    {
-      "year": 2018,
-      "minor": 47,
-      "moderate": 2,
-      "major": 0
-    },
-    {
-      "year": 2019,
-      "minor": 54,
-      "moderate": 2,
-      "major": 0
-    },
-    {
-      "year": 2020,
-      "minor": 49,
-      "moderate": 1,
-      "major": 0
-    },
-    {
-      "year": 2023,
-      "minor": 51,
-      "moderate": 2,
-      "major": 0
-    },
-    {
-      "year": 2024,
-      "minor": 70,
-      "moderate": 3,
-      "major": 0
-    },
-    {
-      "year": 2025,
-      "minor": 46,
-      "moderate": 3,
-      "major": 0
-    },
-    {
-      "year": 2026,
-      "minor": 19,
-      "moderate": 0,
-      "major": 0
-    }
-  ],
-  "fallback": [
-    {
-      "year": 1965,
+      "year": 1920,
       "minor": 0,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 5,
+      "partial": true
+    },
+    {
+      "year": 1921,
+      "minor": 0,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1922,
+      "minor": 1,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1923,
+      "minor": 0,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 90,
+      "partial": true
+    },
+    {
+      "year": 1924,
+      "minor": 0,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 125,
+      "partial": true
+    },
+    {
+      "year": 1925,
+      "minor": 0,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 60,
+      "partial": true
+    },
+    {
+      "year": 1926,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1927,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1928,
+      "minor": 1,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 74,
+      "partial": true
+    },
+    {
+      "year": 1929,
+      "minor": 0,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 70,
+      "partial": true
+    },
+    {
+      "year": 1930,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1931,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1932,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1933,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1934,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1935,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1936,
+      "minor": 1,
+      "moderate": 1,
+      "major": 0,
+      "available": true,
+      "observedDays": 245,
+      "partial": true
+    },
+    {
+      "year": 1937,
+      "minor": 0,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 360,
+      "partial": true
+    },
+    {
+      "year": 1938,
+      "minor": 0,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 312,
+      "partial": true
+    },
+    {
+      "year": 1939,
+      "minor": 1,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1940,
+      "minor": 1,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 24,
+      "partial": true
+    },
+    {
+      "year": 1941,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1942,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1943,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1944,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1945,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1946,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1947,
+      "minor": 2,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 246,
+      "partial": true
+    },
+    {
+      "year": 1948,
+      "minor": 5,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
+    },
+    {
+      "year": 1949,
+      "minor": 2,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1950,
+      "minor": 0,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 81,
+      "partial": true
+    },
+    {
+      "year": 1951,
+      "minor": null,
+      "moderate": null,
+      "major": null,
+      "available": false,
+      "observedDays": 0,
+      "partial": true
+    },
+    {
+      "year": 1952,
+      "minor": 2,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 234,
+      "partial": true
+    },
+    {
+      "year": 1953,
+      "minor": 3,
+      "moderate": 1,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1954,
+      "minor": 1,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 331,
+      "partial": true
+    },
+    {
+      "year": 1955,
+      "minor": 4,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1956,
+      "minor": 6,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
+    },
+    {
+      "year": 1957,
+      "minor": 1,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1958,
+      "minor": 3,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 358,
+      "partial": true
+    },
+    {
+      "year": 1959,
+      "minor": 1,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1960,
+      "minor": 7,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
+    },
+    {
+      "year": 1961,
+      "minor": 10,
+      "moderate": 2,
+      "major": 0,
+      "available": true,
+      "observedDays": 360,
+      "partial": true
+    },
+    {
+      "year": 1962,
+      "minor": 7,
+      "moderate": 1,
+      "major": 3,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 1963,
+      "minor": 3,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 322,
+      "partial": true
+    },
+    {
+      "year": 1964,
+      "minor": 1,
+      "moderate": 1,
+      "major": 0,
+      "available": true,
+      "observedDays": 162,
+      "partial": true
+    },
+    {
+      "year": 1965,
+      "minor": 3,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1966,
-      "minor": 3,
+      "minor": 2,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1967,
-      "minor": 16,
+      "minor": 11,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 359,
+      "partial": true
     },
     {
       "year": 1968,
-      "minor": 6,
+      "minor": 4,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
     },
     {
       "year": 1969,
-      "minor": 3,
-      "moderate": 0,
-      "major": 0
+      "minor": 4,
+      "moderate": 1,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1970,
-      "minor": null,
-      "moderate": null,
-      "major": null
+      "minor": 6,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1971,
-      "minor": null,
-      "moderate": null,
-      "major": null
+      "minor": 5,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1972,
-      "minor": 7,
+      "minor": 6,
       "moderate": 1,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
     },
     {
       "year": 1973,
-      "minor": 5,
-      "moderate": 0,
-      "major": 0
+      "minor": 10,
+      "moderate": 1,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1974,
-      "minor": 4,
+      "minor": 3,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 182,
+      "partial": true
     },
     {
       "year": 1975,
       "minor": 1,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 282,
+      "partial": true
     },
     {
       "year": 1976,
-      "minor": 1,
+      "minor": 2,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 364,
+      "partial": true
     },
     {
       "year": 1977,
-      "minor": 4,
-      "moderate": 1,
-      "major": 0
+      "minor": 6,
+      "moderate": 2,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1978,
-      "minor": 2,
+      "minor": 6,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 351,
+      "partial": true
     },
     {
       "year": 1979,
-      "minor": 5,
+      "minor": 3,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 320,
+      "partial": true
     },
     {
       "year": 1980,
-      "minor": 3,
+      "minor": 4,
       "moderate": 1,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 352,
+      "partial": true
     },
     {
       "year": 1981,
-      "minor": 4,
-      "moderate": 1,
-      "major": 0
+      "minor": 5,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1982,
       "minor": 2,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1983,
-      "minor": 11,
+      "minor": 10,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1984,
-      "minor": 7,
+      "minor": 5,
       "moderate": 1,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
     },
     {
       "year": 1985,
-      "minor": 5,
-      "moderate": 0,
-      "major": 1
+      "minor": 2,
+      "moderate": 1,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1986,
-      "minor": 8,
+      "minor": 7,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1987,
-      "minor": 7,
-      "moderate": 1,
-      "major": 0
+      "minor": 11,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1988,
-      "minor": 5,
+      "minor": 3,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
     },
     {
       "year": 1989,
-      "minor": 8,
+      "minor": 5,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1990,
-      "minor": 6,
+      "minor": 4,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1991,
-      "minor": 6,
-      "moderate": 1,
-      "major": 0
+      "minor": 4,
+      "moderate": 2,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1992,
-      "minor": 12,
-      "moderate": 5,
-      "major": 0
+      "minor": 8,
+      "moderate": 4,
+      "major": 1,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
     },
     {
       "year": 1993,
-      "minor": 15,
-      "moderate": 1,
-      "major": 0
+      "minor": 12,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1994,
-      "minor": 11,
-      "moderate": 1,
-      "major": 0
+      "minor": 5,
+      "moderate": 2,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1995,
-      "minor": 9,
+      "minor": 4,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1996,
-      "minor": 24,
-      "moderate": 1,
-      "major": 0
+      "minor": 9,
+      "moderate": 3,
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
     },
     {
       "year": 1997,
-      "minor": 19,
+      "minor": 16,
       "moderate": 1,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1998,
-      "minor": 14,
-      "moderate": 4,
-      "major": 0
+      "minor": 13,
+      "moderate": 2,
+      "major": 2,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 1999,
-      "minor": 10,
+      "minor": 7,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 2000,
-      "minor": 17,
-      "moderate": 1,
-      "major": 0
+      "minor": 15,
+      "moderate": 3,
+      "major": 0,
+      "available": true,
+      "observedDays": 364,
+      "partial": true
     },
     {
       "year": 2001,
       "minor": 13,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 364,
+      "partial": true
     },
     {
       "year": 2002,
       "minor": 8,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 291,
+      "partial": true
     },
     {
       "year": 2003,
-      "minor": 18,
-      "moderate": 0,
-      "major": 0
+      "minor": 19,
+      "moderate": 3,
+      "major": 0,
+      "available": true,
+      "observedDays": 332,
+      "partial": true
     },
     {
       "year": 2004,
-      "minor": 17,
+      "minor": 12,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 343,
+      "partial": true
     },
     {
       "year": 2005,
-      "minor": 33,
+      "minor": 31,
       "moderate": 2,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 319,
+      "partial": true
     },
     {
       "year": 2006,
-      "minor": 27,
-      "moderate": 2,
-      "major": 0
+      "minor": 24,
+      "moderate": 3,
+      "major": 0,
+      "available": true,
+      "observedDays": 353,
+      "partial": true
     },
     {
       "year": 2007,
-      "minor": 21,
-      "moderate": 1,
-      "major": 0
+      "minor": 20,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 356,
+      "partial": true
     },
     {
       "year": 2008,
-      "minor": 25,
+      "minor": 12,
       "moderate": 1,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 173,
+      "partial": true
     },
     {
       "year": 2009,
-      "minor": 37,
-      "moderate": 7,
-      "major": 0
+      "minor": 21,
+      "moderate": 4,
+      "major": 0,
+      "available": true,
+      "observedDays": 187,
+      "partial": true
     },
     {
       "year": 2010,
       "minor": 41,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 354,
+      "partial": true
     },
     {
       "year": 2011,
-      "minor": 41,
-      "moderate": 2,
-      "major": 0
+      "minor": 35,
+      "moderate": 1,
+      "major": 0,
+      "available": true,
+      "observedDays": 354,
+      "partial": true
     },
     {
       "year": 2012,
-      "minor": 35,
-      "moderate": 3,
-      "major": 1
+      "minor": 7,
+      "moderate": 1,
+      "major": 1,
+      "available": true,
+      "observedDays": 321,
+      "partial": true
     },
     {
       "year": 2013,
-      "minor": 33,
+      "minor": 3,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 317,
+      "partial": true
     },
     {
       "year": 2014,
-      "minor": 35,
+      "minor": 9,
       "moderate": 1,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 304,
+      "partial": true
     },
     {
       "year": 2015,
-      "minor": 25,
-      "moderate": 1,
-      "major": 0
+      "minor": 11,
+      "moderate": 2,
+      "major": 0,
+      "available": true,
+      "observedDays": 317,
+      "partial": true
     },
     {
       "year": 2016,
-      "minor": 37,
-      "moderate": 5,
-      "major": 1
+      "minor": 34,
+      "moderate": 3,
+      "major": 1,
+      "available": true,
+      "observedDays": 365,
+      "partial": true
     },
     {
       "year": 2017,
       "minor": 43,
       "moderate": 2,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 2018,
-      "minor": 56,
-      "moderate": 3,
-      "major": 0
+      "minor": 53,
+      "moderate": 2,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 2019,
       "minor": 59,
-      "moderate": 3,
-      "major": 0
+      "moderate": 2,
+      "major": 0,
+      "available": true,
+      "observedDays": 364,
+      "partial": true
     },
     {
       "year": 2020,
-      "minor": 57,
+      "minor": 53,
       "moderate": 1,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
     },
     {
       "year": 2021,
-      "minor": 50,
+      "minor": 46,
       "moderate": 0,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 2022,
-      "minor": 47,
+      "minor": 44,
       "moderate": 4,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 2023,
-      "minor": 68,
+      "minor": 62,
       "moderate": 2,
-      "major": 0
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
     },
     {
       "year": 2024,
-      "minor": 91,
-      "moderate": 4,
-      "major": 0
+      "minor": 89,
+      "moderate": 3,
+      "major": 0,
+      "available": true,
+      "observedDays": 366,
+      "partial": false
     },
     {
       "year": 2025,
-      "minor": 58,
-      "moderate": 2,
-      "major": 0
+      "minor": 49,
+      "moderate": 4,
+      "major": 0,
+      "available": true,
+      "observedDays": 365,
+      "partial": false
+    },
+    {
+      "year": 2026,
+      "minor": 27,
+      "moderate": 0,
+      "major": 0,
+      "available": true,
+      "observedDays": 230,
+      "partial": true
     }
   ]
 }
