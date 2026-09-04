@@ -14,9 +14,10 @@ source and partial-year day coverage. Counts use the maximum in each local civil
 AM/PM bucket, not every sampled water level. Official USGS Grassy Sound crests
 are retained separately and unchanged in the historic catalogue.
 
-When the seasonal forecast is on, only its forecast and uncertainty datasets
-are plotted. Past-forecast selection is restricted to the preceding five
-calendar years; the restriction also applies to manually entered years.
+When the seasonal forecast is on, its forecast, uncertainty, and selected year's
+USGS observed flooding are plotted. The observed line is labeled with the year;
+the current year's line stops at today. Past-forecast selection is restricted to
+the preceding five calendar years; the restriction also applies to manually entered years.
 Those hindcasts use the local USGS training record, not unadjusted Lewes levels.
 
 PETSS uses station 8535901, with the run timestamp displayed alongside the latest

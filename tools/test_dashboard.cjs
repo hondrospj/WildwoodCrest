@@ -211,25 +211,50 @@ async function main() {
     }
   });
 
-  await test("forecast modes render only forecast and uncertainty; forecast off restores observed history", () => {
+  await test("forecast modes include the selected observed year and uncertainty; forecast off restores observed history", () => {
     const c = makeContext(annual.generatedAtUtc);
     c.DOY_CACHE = context.DOY_CACHE;
     c.HIGH_TIDES_NAVD = context.HIGH_TIDES_NAVD;
+    c.USGS_HISTORY_NAVD = context.USGS_HISTORY_NAVD;
     c.doyYearColor = () => "#888";
     c.currentAnnualForecastInfo = year => ({ year, mean: 40, low: 25, high: 60 });
     c.pastAnnualForecastInfo = c.currentAnnualForecastInfo;
     c.seasonalHistoricForecastInfo = c.currentAnnualForecastInfo;
     c.buildDoySeasonalForecastPath = () => ({ low: Array(365).fill(25), mean: Array(365).fill(40), high: Array(365).fill(60) });
-    install(c, ["renderDOYCumPanel"]);
+    install(c, ["renderDOYCumPanel", "firstLegendColor", "doyLegendItems"]);
+    const now = c.getESTParts(new c.Date());
+    const todayIdx = c.calIndex365(now.y, now.m, now.d);
     for (const mode of ["years", "past"]) {
       c.DOY_VIEW_MODE = mode;
       c.DOY_YEAR_RANGE_KEY = "";
       c.DOY_ANNUAL_FORECAST_ENABLED = true;
       c.renderDOYCumPanel();
       const datasets = c.doyCumChart.data.datasets;
-      assert.deepEqual(Array.from(datasets, row => row._kind), ["seasonalForecastRangeLow", "seasonalForecastRangeHigh", mode === "past" ? "pastForecast" : "seasonalForecast"]);
+      assert.deepEqual(Array.from(datasets, row => row._kind), ["seasonalForecastRangeLow", "seasonalForecastRangeHigh", mode === "past" ? "pastForecast" : "seasonalForecast", mode === "past" ? "pastObserved" : "current"]);
       assert(datasets.every(row => !row.hidden));
+      assert.equal(datasets[1].fill, "-1", "Uncertainty must still fill to its adjacent lower bound");
+      const observed = datasets[3];
+      const expectedYear = mode === "past" ? c.DOY_PAST_SELECTED_YEAR : now.y;
+      assert.equal(observed._year, expectedYear);
+      assert.deepEqual(plain(observed.data), plain(mode === "past"
+        ? c.DOY_CACHE.seriesByYear.find(row => row.y === expectedYear).cum
+        : c.buildYTDSeriesFromEvents(c.USGS_HISTORY_NAVD)));
+      if(mode === "years"){
+        assert(observed.data.slice(0, todayIdx + 1).every(Number.isFinite));
+        assert(observed.data.slice(todayIdx + 1).every(value => value === null), "Observed cannot extend into the future");
+      }
+      const chart = c.doyCumChart;
+      chart.isDatasetVisible = index => !chart.data.datasets[index].hidden;
+      assert.deepEqual(Array.from(c.doyLegendItems(chart), item => item.text), ["Forecast", ...(mode === "years" ? [`${expectedYear} Observed`] : []), "Forecast Range", ...(mode === "past" ? [`${expectedYear} Observed`] : [])]);
+      assert(chart.options.plugins.legend.labels.filter({ datasetIndex: 3 }, chart.data), "Observed year must remain available in the legend");
     }
+    const pastYear = now.y - 3;
+    c.DOY_PAST_SELECTED_YEAR = pastYear;
+    c.renderDOYCumPanel();
+    const pastDatasets = c.doyCumChart.data.datasets;
+    assert.equal(pastDatasets[2]._forecastYear, pastYear);
+    assert.equal(pastDatasets[3]._year, pastYear);
+    assert.deepEqual(plain(pastDatasets[3].data), plain(c.DOY_CACHE.seriesByYear.find(row => row.y === pastYear).cum));
     c.DOY_VIEW_MODE = "years";
     c.DOY_YEAR_RANGE_KEY = "";
     c.DOY_ANNUAL_FORECAST_ENABLED = false;

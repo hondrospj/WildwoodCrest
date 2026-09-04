@@ -7483,7 +7483,7 @@ function renderDOYVisibleSummary(years, curYear){
   const end = selected[selected.length - 1];
   if(DOY_VIEW_MODE === "past"){
     doyVisibleBadge.textContent = String(start);
-    if(doyRangeNote) doyRangeNote.textContent = `${start} forecast and uncertainty · past 5 years`;
+    if(doyRangeNote) doyRangeNote.textContent = `${start} observed, forecast and uncertainty · past 5 years`;
     renderDOYYearTable(years, curYear, selected);
     return;
   }
@@ -8041,9 +8041,11 @@ function renderDOYCumPanel(){
   }
 
   const baseDatasets = isPastMode ? [] : [dsRangeFloor, dsRange, dsAvg];
+  const selectedForecastYear = isPastMode ? Array.from(selectedYears)[0] : CUR_Y;
+  const forecastYearDatasets = yearDatasets.filter(ds => ds._year === selectedForecastYear);
   const data = {
     labels,
-    datasets: DOY_ANNUAL_FORECAST_ENABLED ? forecastDatasets : [...baseDatasets, ...yearDatasets]
+    datasets: DOY_ANNUAL_FORECAST_ENABLED ? [...forecastDatasets, ...forecastYearDatasets] : [...baseDatasets, ...yearDatasets]
   };
 
   const options = {
@@ -8070,7 +8072,7 @@ function renderDOYCumPanel(){
           filter:(legendItem, chartData)=>{
             const ds = chartData?.datasets?.[legendItem.datasetIndex];
             if(ds?._legendHidden) return false;
-            return ["Historic Range","Average","Current Year","Forecast","Forecast Range"].includes(ds?.label || "");
+            return ["Historic Range","Average","Current Year","Observed","Forecast","Forecast Range"].includes(ds?.label || "");
           }
         },
         onClick:(e, legendItem, legend)=>{
@@ -8134,7 +8136,7 @@ function renderDOYCumPanel(){
               return `Average: ${formatFloodStat(v)} floods`;
             }
             if(kind === "pastObserved"){
-              return `Observed: ${formatFloodStat(v)} floods`;
+              return `${ctx.dataset._year} observed: ${formatFloodStat(v)} floods`;
             }
             if(kind === "seasonalForecast" || kind === "pastForecast"){
               return formatDoyForecastTooltip(ctx.chart, idx, ctx.dataset);
@@ -9513,7 +9515,8 @@ setInterval(async ()=>{
         if(datasetIndex < 0) return null;
         const dataset = chart.data.datasets[datasetIndex];
         return {
-          text:label,
+          text:(label === "Current Year" || label === "Observed") && Number.isInteger(dataset._year)
+            ? `${dataset._year} Observed` : label,
           datasetIndex,
           hidden:chart ? !chart.isDatasetVisible(datasetIndex) : !!dataset.hidden,
           fillStyle:firstLegendColor(dataset.backgroundColor, firstLegendColor(dataset.borderColor, "rgba(234,240,255,.86)")),
