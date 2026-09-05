@@ -6,7 +6,7 @@
   "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/petss/prod/petss.20260905/petss.t12z.csv.tar.gz",
   "model_time_utc": "2026-09-05T12:00:00Z",
   "valid_through_utc": "2026-09-09T18:00:00.000Z",
-  "updated_utc": "2026-09-05T18:24:50.856Z",
+  "updated_utc": "2026-09-05T21:19:32.339Z",
   "n_points": 223,
   "notes": "Ensemble mean plotted as TWL (fallback to TIDE+SURGE when TWL missing)."
 }
