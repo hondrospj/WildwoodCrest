@@ -64,12 +64,28 @@ function makeContext(nowIso) {
     DOY_VIEW_MODE: "years", DOY_RANGE_START: null, DOY_RANGE_END: null, DOY_PAST_SELECTED_YEAR: null,
     DOY_ANNUAL_FORECAST_ENABLED: false, DOY_FORECAST_DOT_VISIBLE: true,
     DOY_FORECAST_RANGE_VISIBLE: true, DOY_PAST_FORECAST_VISIBLE: true,
+    DOY_YEAR_VISIBILITY_INITIALIZED: false, DOY_VISIBILITY_CURRENT_YEAR: null,
+    DOY_AVERAGE_VISIBLE: true, DOY_HISTORIC_RANGE_VISIBLE: true,
     resolvePeaksJsonUrl: async () => ({ json: history }),
     buildLiveFloodPeaksSince2026: async () => { throw new Error("Unexpected live fetch in offline test"); },
     applyFilter() {}, updateMonthAveragesFromHistory() {}, renderAnnual() {}, renderDOYCumPanel() {},
     renderDOYYearControls() {}, attachChartZoom() {}, rightFloodAxisConfig: () => ({}),
     document: { getElementById: () => ({ getContext: () => ({}) }) }, window: {},
-    Chart: function Chart(_canvas, config) { Object.assign(this, config); this.update = () => {}; }
+    Chart: function Chart(_canvas, config) {
+      Object.assign(this, config);
+      const metadata = new WeakMap();
+      this.getDatasetMeta = index => {
+        const ds = this.data.datasets[index];
+        if(!metadata.has(ds)) metadata.set(ds, { hidden: null });
+        return metadata.get(ds);
+      };
+      this.isDatasetVisible = index => {
+        const meta = this.getDatasetMeta(index);
+        return typeof meta.hidden === "boolean" ? !meta.hidden : !this.data.datasets[index].hidden;
+      };
+      this.setDatasetVisibility = (index, visible) => { this.getDatasetMeta(index).hidden = !visible; };
+      this.update = () => {};
+    }
   });
   vm.runInContext("DOY_SELECTED_YEARS = new Set();", context);
   install(context, ["getESTParts", "annualYearFromEvent", "countEventsFromListForYear", "buildStationAnnualCountsMap",
@@ -78,7 +94,7 @@ function makeContext(nowIso) {
     "isLeapYear", "calIndex365", "monthStarts365", "doyFloodStageDisplayFt", "doyStageLabel",
     "buildDOYYearDailyCountsFromEvents", "computeDOYStatsFromEvents", "refreshDOYFromHistory",
     "buildYTDSeriesFromEvents", "emptyCurrentYTDSeries", "getDOYSelectableYears", "ensureDOYSelectedRange",
-    "normalizeDOYSelectedRange", "getDOYEffectiveSelectedYears", "setDOYRange", "initJSONBackedHistory"]);
+    "normalizeDOYSelectedRange", "getDOYEffectiveSelectedYears", "setDOYRange", "resetDOYForecastVisibility", "initJSONBackedHistory"]);
   return context;
 }
 
@@ -188,30 +204,31 @@ async function main() {
     assert.equal(shown[0].t, "2026-09-04T02:00:00Z");
   });
 
-  await test("past-forecast year limits and manual selection advance with mocked 2026, 2027, and 2030 clocks", () => {
+  await test("past forecasts start at 2026 and include the current year with mocked 2026, 2027, and 2030 clocks", () => {
     for (const year of [2026, 2027, 2030]) {
       const c = makeContext(`${year}-01-02T12:00:00Z`);
       const years = Array.from({ length: year - 1999 }, (_, index) => 2000 + index);
       c.DOY_CONTROL_YEARS = years;
       c.DOY_VIEW_MODE = "past";
       c.DOY_ANNUAL_FORECAST_ENABLED = true;
-      const expected = Array.from({ length: 5 }, (_, index) => year - 5 + index);
+      const expected = Array.from({ length: year - 2025 }, (_, index) => 2026 + index);
       assert.deepEqual(Array.from(c.getDOYSelectableYears([...years, year + 1], year)), expected);
       c.setDOYRange(1919, 1919, "year");
-      assert.equal(c.DOY_PAST_SELECTED_YEAR, year - 5);
+      assert.equal(c.DOY_PAST_SELECTED_YEAR, 2026);
       c.setDOYRange(year + 100, year + 100, "year");
-      assert.equal(c.DOY_PAST_SELECTED_YEAR, year - 1);
+      assert.equal(c.DOY_PAST_SELECTED_YEAR, year);
       c.DOY_CONTROL_YEARS = years.filter(value => value !== year - 2);
       c.setDOYRange(year - 2, year - 2, "year");
+      assert(c.DOY_PAST_SELECTED_YEAR >= 2026 && c.DOY_PAST_SELECTED_YEAR <= year);
       assert(c.DOY_CONTROL_YEARS.includes(c.DOY_PAST_SELECTED_YEAR), "Manual selection must snap to an available year");
       c.DOY_VIEW_MODE = "years";
-      assert.deepEqual(Array.from(c.getDOYSelectableYears(years, year)), [year]);
+      assert.deepEqual(Array.from(c.getDOYSelectableYears(years, year)), years, "Old observed years remain available in ordinary forecast mode");
       c.DOY_ANNUAL_FORECAST_ENABLED = false;
       assert.deepEqual(Array.from(c.getDOYSelectableYears(years, year)), years);
     }
   });
 
-  await test("forecast modes include the selected observed year and uncertainty; forecast off restores observed history", () => {
+  await test("forecast defaults to current plus forecast; all comparison lines remain optional and preserve user choices", () => {
     const c = makeContext(annual.generatedAtUtc);
     c.DOY_CACHE = context.DOY_CACHE;
     c.HIGH_TIDES_NAVD = context.HIGH_TIDES_NAVD;
@@ -224,39 +241,57 @@ async function main() {
     install(c, ["renderDOYCumPanel", "firstLegendColor", "doyLegendItems"]);
     const now = c.getESTParts(new c.Date());
     const todayIdx = c.calIndex365(now.y, now.m, now.d);
+    const byKind = kind => c.doyCumChart.data.datasets.find(row => row._kind === kind);
+    const shownKinds = () => Array.from(c.doyCumChart.data.datasets).filter((_, index) => c.doyCumChart.isDatasetVisible(index)).map(row => row._kind).sort();
+    const toggle = kind => {
+      const chart = c.doyCumChart;
+      const index = chart.data.datasets.findIndex(row => row._kind === kind);
+      assert(index >= 0, `Missing comparison ${kind}`);
+      chart.options.plugins.legend.onClick({}, { datasetIndex: index }, { chart });
+    };
     for (const mode of ["years", "past"]) {
       c.DOY_VIEW_MODE = mode;
-      c.DOY_YEAR_RANGE_KEY = "";
       c.DOY_ANNUAL_FORECAST_ENABLED = true;
+      c.resetDOYForecastVisibility();
       c.renderDOYCumPanel();
-      const datasets = c.doyCumChart.data.datasets;
-      assert.deepEqual(Array.from(datasets, row => row._kind), ["seasonalForecastRangeLow", "seasonalForecastRangeHigh", mode === "past" ? "pastForecast" : "seasonalForecast", mode === "past" ? "pastObserved" : "current"]);
-      assert(datasets.every(row => !row.hidden));
-      assert.equal(datasets[1].fill, "-1", "Uncertainty must still fill to its adjacent lower bound");
-      const observed = datasets[3];
-      const expectedYear = mode === "past" ? c.DOY_PAST_SELECTED_YEAR : now.y;
-      assert.equal(observed._year, expectedYear);
-      assert.deepEqual(plain(observed.data), plain(mode === "past"
-        ? c.DOY_CACHE.seriesByYear.find(row => row.y === expectedYear).cum
-        : c.buildYTDSeriesFromEvents(c.USGS_HISTORY_NAVD)));
-      if(mode === "years"){
-        assert(observed.data.slice(0, todayIdx + 1).every(Number.isFinite));
-        assert(observed.data.slice(todayIdx + 1).every(value => value === null), "Observed cannot extend into the future");
+      const forecastKind = mode === "past" ? "pastForecast" : "seasonalForecast";
+      assert.deepEqual(shownKinds(), ["current", forecastKind].sort());
+      const observed = byKind("current");
+      assert.equal(observed._year, now.y);
+      assert.equal(observed.borderColor, "rgba(239,68,68,1)");
+      assert.deepEqual(plain(observed.data), plain(c.buildYTDSeriesFromEvents(c.USGS_HISTORY_NAVD)));
+      assert(observed.data.slice(0, todayIdx + 1).every(Number.isFinite));
+      assert(observed.data.slice(todayIdx + 1).every(value => value === null), "Current observations cannot extend into the future in either mode");
+      const items = c.doyLegendItems(c.doyCumChart);
+      assert(items.some(item => item.text === `${now.y} Observed` && !item.hidden));
+      for(const label of ["Average", "Historic Range", "Forecast Range"]){
+        assert(items.some(item => item.text === label && item.hidden), `Unchecked ${label} remains available`);
       }
-      const chart = c.doyCumChart;
-      chart.isDatasetVisible = index => !chart.data.datasets[index].hidden;
-      assert.deepEqual(Array.from(c.doyLegendItems(chart), item => item.text), ["Forecast", ...(mode === "years" ? [`${expectedYear} Observed`] : []), "Forecast Range", ...(mode === "past" ? [`${expectedYear} Observed`] : [])]);
-      assert(chart.options.plugins.legend.labels.filter({ datasetIndex: 3 }, chart.data), "Observed year must remain available in the legend");
+      for(const kind of ["average", "range", "seasonalForecastRangeHigh"]){
+        toggle(kind);
+        c.renderDOYCumPanel();
+        assert.equal(byKind(kind).hidden, false, `${kind} selection survives rerender`);
+      }
+      for(const [lowKind, highKind] of [["rangeFloor", "range"], ["seasonalForecastRangeLow", "seasonalForecastRangeHigh"]]){
+        const rows = c.doyCumChart.data.datasets;
+        const low = rows.findIndex(row => row._kind === lowKind);
+        const high = rows.findIndex(row => row._kind === highKind);
+        assert.equal(high, low + 1);
+        assert.equal(rows[high].fill, "-1");
+        assert.equal(rows[low].hidden, false);
+        assert.equal(rows[high].hidden, false);
+      }
+      toggle("current"); toggle(forecastKind); c.renderDOYCumPanel();
+      assert.equal(byKind("current").hidden, true);
+      assert.equal(byKind(forecastKind).hidden, true);
+      c.resetDOYForecastVisibility(); c.renderDOYCumPanel();
+      assert.deepEqual(shownKinds(), ["current", forecastKind].sort(), "Next forecast activation resets manual selections");
     }
-    const pastYear = now.y - 3;
-    c.DOY_PAST_SELECTED_YEAR = pastYear;
+    c.DOY_PAST_SELECTED_YEAR = 2026;
     c.renderDOYCumPanel();
-    const pastDatasets = c.doyCumChart.data.datasets;
-    assert.equal(pastDatasets[2]._forecastYear, pastYear);
-    assert.equal(pastDatasets[3]._year, pastYear);
-    assert.deepEqual(plain(pastDatasets[3].data), plain(c.DOY_CACHE.seriesByYear.find(row => row.y === pastYear).cum));
+    assert.equal(byKind("pastForecast")._forecastYear, 2026);
+    assert(byKind("current"), "Current year comparison remains present for a selected forecast year");
     c.DOY_VIEW_MODE = "years";
-    c.DOY_YEAR_RANGE_KEY = "";
     c.DOY_ANNUAL_FORECAST_ENABLED = false;
     c.renderDOYCumPanel();
     const kinds = Array.from(c.doyCumChart.data.datasets, row => row._kind);
