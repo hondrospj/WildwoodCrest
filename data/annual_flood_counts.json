@@ -1,6 +1,6 @@
 {
   "schema": "shorelysafe-annual-flood-counts-v3",
-  "generatedAtUtc": "2026-09-15T06:40:53.149Z",
+  "generatedAtUtc": "2026-09-16T06:40:38.339Z",
   "datum": "NAVD88",
   "thresholdsNAVD88": {
     "minorLow": 3.43,
@@ -980,7 +980,7 @@
       "moderate": 0,
       "major": 0,
       "available": true,
-      "observedDays": 241,
+      "observedDays": 242,
       "partial": true
     }
   ]
