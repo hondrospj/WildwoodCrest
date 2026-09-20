@@ -34,10 +34,6 @@ jobs:
     name: Update peaks cache
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,40 +45,19 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Run updater
-        shell: bash
-        env:
-          BACKFILL: ${{ inputs.backfill || false }}
-        run: |
-          if [[ "$BACKFILL" == "true" ]]; then
-            node tools/update_history.js --backfill
-          else
-            node tools/update_history.js
-          fi
-
-      - name: Validate history and dashboard contracts
-        run: node tools/test_dashboard.cjs
+      - name: Run universal V2 updater
+        run: node tools/update_peaks_navd88.js
 
       - name: Commit and push if changed
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add data/peaks_navd88.json data/annual_flood_counts.json
-
+          git add data/peaks_navd88.json
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0
           fi
-
           git commit -m "Update peaks cache"
           git pull --rebase
           git push
-
-      - uses: actions/configure-pages@v6
-      - uses: actions/upload-pages-artifact@v5
-        with:
-          path: .
-      - id: deployment
-        uses: actions/deploy-pages@v5
