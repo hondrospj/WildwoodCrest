@@ -8797,19 +8797,19 @@ refreshDOYFromHistory();
 
 
 const TOWN_DISPLAY_NAME = "Wildwood Crest";
-const GAUGE_DISPLAY_NAME = "Cape May Harbor at Cape May";
+const GAUGE_DISPLAY_NAME = "Cape May Harbor";
 const GAUGE_TYPE = "USGS";
 const JURISDICTION_SOURCE = "Cape May";
 const DEFAULT_GAUGE_ID = "01411390";
 const DEFAULT_GAUGE_ZOOM = 12;
 const USGS_SITE = "01411390";
 const USGS_PARAM_PRIMARY = "72279";
-const NOAA_OBS_STATION = "8536110";
-const NOAA_STATION_CANDIDATES = ["8536110","8536110","8536110"];
-const NOAA_SEA_LEVEL_STATION_CANDIDATES = ["8536110"];
-const COOPS_STATION = "8536110";
+const NOAA_OBS_STATION = "8557380";
+const NOAA_STATION_CANDIDATES = ["8557380"];
+const NOAA_SEA_LEVEL_STATION_CANDIDATES = ["8557380"];
+const COOPS_STATION = "8557380";
 const COOPS_APP = "cupajoe.live";
-const NOAA_STATION_TIDECLOCK = "8536110";
+const NOAA_STATION_TIDECLOCK = "8557380";
 const CREST_WINDOW_HOURS = 2;
 const REQUIRE_WITHIN_HOURS = 1;
 const LIVE_START_ISO = "2026-01-01T00:00:00Z";
@@ -8817,9 +8817,9 @@ const ALERT_POINT = {"lat":38.9731133,"lon":-74.837918};
 let DISPLAY_DATUM = "MLLW";
 const DATUMS = ["MLLW","NAVD88","MSL","MHHW"];
 // Cape May Harbor uses the workbook/USGS harbor datum relationship, not the nearby Cape May ocean station datums.
-const OFFSET_FROM_MLLW = {"MLLW":0.0,"NAVD88":-2.77,"MSL":-2.41,"MHHW":-5.01};
+const OFFSET_FROM_MLLW = {"MLLW":0,"NAVD88":-2.77,"MSL":-2.41,"MHHW":-5.01};
 const THRESH = {"MLLW":{"minorLow":6.2,"moderateLow":7.2,"majorLow":8.2},"NAVD88":{"minorLow":3.43,"moderateLow":4.43,"majorLow":5.43},"MSL":{"minorLow":3.79,"moderateLow":4.79,"majorLow":5.79},"MHHW":{"minorLow":1.19,"moderateLow":2.19,"majorLow":3.19}};
-const TOP_TEN_MLLW = [{"date":"01-23-2016","ft":9.24},{"date":"10-29-2012","ft":8.67},{"date":"10-30-2012","ft":8.29},{"date":"08-28-2011","ft":7.92},{"date":"08-22-2025","ft":7.89},{"date":"10-27-2018","ft":7.77},{"date":"09-26-2000","ft":7.74},{"date":"09-10-2018","ft":7.69},{"date":"10-02-2015","ft":7.66},{"date":"10-12-2025","ft":7.65}];
+const TOP_TEN_MLLW = [{"date":"03-06-1962","ft":10.27},{"date":"10-29-2012","ft":8.92},{"date":"01-23-2016","ft":8.3},{"date":"08-27-2011","ft":8.01},{"date":"11-13-2009","ft":7.8},{"date":"06-04-2012","ft":7.66},{"date":"10-07-2006","ft":7.65},{"date":"05-12-2008","ft":7.58},{"date":"12-09-2014","ft":7.58},{"date":"05-25-2005","ft":7.48}];
 const GAUGES = [
   {
     "name": "Absecon Creek at Absecon",
@@ -9168,6 +9168,7 @@ const PETSS_JSON_CANDIDATES = [
   `/data/petss_forecast_${COOPS_STATION}_mllw.json`
 ];
 const PEAKS_JSON_FILE = "peaks_navd88.json";
+const FLOODMAPPER_V2_PIPELINE = {"releaseVersion":"20260920-nj-universal-v2","primaryUsgsGaugeId":"01411390","noaaStationId":"8557380","noaaBiasCorrectionFt":0.146,"crestUsgsStationId":"01411382","sourcePrecedence":["primary-usgs-continuous","bias-corrected-noaa-historical-fill","official-usgs-storm-tide-crest-override"]};
 const PEAKS_JSON_PATH_CANDIDATES = [
   `data/${PEAKS_JSON_FILE}`,
   `./data/${PEAKS_JSON_FILE}`,
