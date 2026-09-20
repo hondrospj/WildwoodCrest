@@ -4894,6 +4894,16 @@ function annualNumber(v){
   return Number.isFinite(n) ? Math.floor(n) : null;
 }
 
+function noaaLongTermSourceName(){
+  return ({
+    "8557380":"NOAA Lewes",
+    "8545240":"NOAA Philadelphia",
+    "8534720":"NOAA Atlantic City",
+    "8531680":"NOAA Sandy Hook",
+    "8518750":"NOAA The Battery"
+  })[String(COOPS_STATION)] || `NOAA ${COOPS_STATION}`;
+}
+
 function annualSourceName(source){
   return source === "unavailable" ? "No observations available" : source;
 }
@@ -5106,7 +5116,7 @@ function buildAnnualArrays(){
   const countsByYear = buildStationAnnualCountsMap();
   const coverage = new Set([...stationAnnualCoverageYears, ...countsByYear.keys()]);
   const firstYear = Math.min(curYear, ...coverage);
-  // Keep the complete Lewes-to-USGS timeline, including explicit no-data gaps.
+  // Keep the complete NOAA-to-USGS timeline, including explicit no-data gaps.
   // An unavailable year is not a measured zero and must not use another station's counts.
   let rows = Array.from({length:curYear - firstYear + 1}, (_, i)=>firstYear + i)
     .map(year => {
@@ -5119,7 +5129,7 @@ function buildAnnualArrays(){
         minor:available ? counts.minor : null,
         moderate:available ? counts.moderate : null,
         major:available ? counts.major : null,
-        source:available ? (agencies.has("USGS") && agencies.has("NOAA") ? "NOAA Lewes / USGS" : agencies.has("USGS") ? "USGS" : "NOAA Lewes; official crests where available") : "unavailable"
+        source:available ? (agencies.has("USGS") && agencies.has("NOAA") ? `${noaaLongTermSourceName()} / USGS` : agencies.has("USGS") ? "USGS" : `${noaaLongTermSourceName()}; official crests where available`) : "unavailable"
       };
     });
 
