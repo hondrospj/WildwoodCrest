@@ -18,7 +18,8 @@ assert(root, "Pass a dashboard root containing index.html and tools/history_data
 const readJson = name => JSON.parse(fs.readFileSync(path.join(root, name), "utf8"));
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const history = readJson("data/peaks_navd88.json");
-const annual = readJson("data/annual_flood_counts.json");
+const pipeline = readJson("data/gauge_pipeline_v2.json");
+const verificationTime = history.lastProcessedISO || history.generatedAt;
 const forecast = readJson("data/petss_forecast.json");
 const forecastMeta = readJson("data/petss_meta.json");
 const helpers = require(path.join(root, "tools/history_data.js"));
@@ -53,7 +54,7 @@ function makeContext(nowIso) {
   }
   const context = vm.createContext({
     Date: FixedDate, console, URL, AbortSignal,
-    TZ: helpers.TZ, GAUGE_TYPE: "USGS", DISPLAY_DATUM: "NAVD88",
+    TZ: helpers.TZ, GAUGE_TYPE: "USGS", DISPLAY_DATUM: "NAVD88", COOPS_STATION: pipeline.noaaStationId,
     THRESH: { NAVD88: history.thresholdsNAVD88 },
     fmtPartsYMD: new Intl.DateTimeFormat("en-US", { timeZone: helpers.TZ, year: "numeric", month: "2-digit", day: "2-digit" }),
     HIGH_TIDES_NAVD: [], USGS_HISTORY_NAVD: [], HISTORIC_CRESTS_NAVD: [],
@@ -89,7 +90,7 @@ function makeContext(nowIso) {
   });
   vm.runInContext("DOY_SELECTED_YEARS = new Set();", context);
   install(context, ["getESTParts", "annualYearFromEvent", "countEventsFromListForYear", "buildStationAnnualCountsMap",
-    "addCoverageYearValue", "addCoverageYearsFromValue", "inferStationAnnualCoverageYears", "buildAnnualArrays",
+    "addCoverageYearValue", "addCoverageYearsFromValue", "inferStationAnnualCoverageYears", "noaaLongTermSourceName", "buildAnnualArrays",
     "normalizePeaksJson", "historicDateKey", "historicRowPriority", "combinedHistoricRowsNavd",
     "isLeapYear", "calIndex365", "monthStarts365", "doyFloodStageDisplayFt", "doyStageLabel",
     "buildDOYYearDailyCountsFromEvents", "computeDOYStatsFromEvents", "refreshDOYFromHistory",
@@ -105,13 +106,13 @@ async function test(name, body) {
 }
 
 async function main() {
-  const context = makeContext(annual.generatedAtUtc);
+  const context = makeContext(verificationTime);
   await context.initJSONBackedHistory();
 
-  await test("17 original official crests and all March 1962 crests survive the raw catalogue", () => {
+  await test("17 official crests remain authoritative and the adjacent March 1962 NOAA day survives", () => {
     // Baseline identities are intentionally pinned, while new future official
     // crests are allowed. March 7, 1962 is a Lewes measured crest, not a second
-    // official USGS crest; neither source may erase the other from the table.
+    // official USGS crest. V2 replaces the official date, not the adjacent day.
     const baseline = [
       ["1962-03-06", 7.50], ["2001-03-07", 4.26], ["2002-01-31", 3.64],
       ["2003-01-03", 4.58], ["2003-12-06", 4.45], ["2005-05-25", 4.71],
@@ -121,16 +122,21 @@ async function main() {
       ["2014-12-09", 4.81], ["2016-01-23", 5.53]
     ];
     const official = history.events.filter(row => row.officialCrestOverride);
-    for (const [date, ft] of baseline) assert(official.some(row => row.localDate === date && row.ft === ft && row.sourceStation === "01411382"), `Lost official crest ${date} ${ft}`);
+    for (const [date, ft] of baseline) assert(official.some(row => row.localDate === date && row.ft === ft && row.officialCrestSourceSite === "01411382"), `Lost official crest ${date} ${ft}`);
     assert(official.length >= 17);
     const rows = context.combinedHistoricRowsNavd();
     const keys = new Set(rows.map(crestKey));
     for (const row of official) assert(keys.has(crestKey(row)), `Official crest missing from table: ${crestKey(row)}`);
     for (const date of ["1962-03-06", "1962-03-07"]) {
       const raw = history.events.filter(row => row.localDate === date);
-      assert(raw.length >= 2, `Expected multiple measured/official crests on ${date}`);
+      assert(raw.length >= 1, `Expected a canonical daily crest on ${date}`);
       for (const row of raw) assert(keys.has(crestKey(row)), `Date collapse lost ${crestKey(row)}`);
     }
+    const march6 = context.HIGH_TIDES_NAVD.filter(row => row.localDate === "1962-03-06");
+    assert.equal(march6.length, 1);
+    assert.equal(march6[0].ft, 7.5);
+    assert(march6[0].officialCrestOverride);
+    assert(context.HIGH_TIDES_NAVD.some(row => row.localDate === "1962-03-07" && row.historyAgency === "NOAA"));
     const original = context.HISTORIC_CRESTS_NAVD;
     const first = { t: "1962-03-06T14:00:00Z", ft: 6, officialCrestOverride: true };
     const second = { t: "1962-03-06T22:00:00Z", ft: 7, officialCrestOverride: true };
@@ -139,45 +145,42 @@ async function main() {
     context.HISTORIC_CRESTS_NAVD = original;
   });
 
-  await test("annual archive starts in 1919; observed zeros, missing years, and partial coverage remain distinct", () => {
-    const endYear = helpers.localParts(annual.generatedAtUtc).y;
-    assert.equal(annual.firstYear, 1919);
-    assert.equal(annual.lastYear, endYear);
-    assert.equal(annual.counts.length, endYear - 1919 + 1);
-    const expected = helpers.annualCounts(history.events, history.coverageYears, history.thresholdsNAVD88, endYear);
-    assert.deepEqual(annual.counts.map(({ year, minor, moderate, major, available }) => ({ year, minor, moderate, major, available })), expected);
-    const days = new Map();
-    for (const event of history.events.filter(row => !row.officialCrestOverride)) {
-      if (!days.has(event.y)) days.set(event.y, new Set());
-      days.get(event.y).add(event.localDate);
-    }
-    for (const row of annual.counts) {
-      const observedDays = days.get(row.year)?.size || 0;
-      const fullYearDays = new Date(Date.UTC(row.year, 1, 29)).getUTCMonth() === 1 ? 366 : 365;
-      assert.equal(row.observedDays, observedDays, `Coverage mismatch in ${row.year}`);
-      assert.equal(row.partial, observedDays < fullYearDays);
+  await test("annual UI counts agree with V2 history; observed zeros and missing years remain distinct", async () => {
+    const endYear = helpers.localParts(verificationTime).y;
+    assert.equal(context.YEARS[0], 1919);
+    assert.equal(context.YEARS.at(-1), endYear);
+    assert.equal(context.YEARS.length, endYear - 1919 + 1);
+    const coverage = new Set(history.events.map(row => helpers.localParts(row.t).y));
+    const expected = helpers.annualCounts(history.events, coverage, history.thresholdsNAVD88, endYear);
+    for (const row of expected) {
       const index = context.YEARS.indexOf(row.year);
       assert.notEqual(index, -1);
       assert.equal(context.annualMinor[index], row.minor);
       assert.equal(context.annualModerate[index], row.moderate);
       assert.equal(context.annualMajor[index], row.major);
     }
-    assert(annual.counts.some(row => !row.available && row.minor === null));
-    assert(annual.counts.some(row => row.available && row.observedDays > 0 && row.partial));
-    assert(annual.counts.some(row => row.available && row.minor === 0 && row.moderate === 0 && row.major === 0));
-    const fixture = helpers.annualCounts([{ t: "2024-06-01T12:00:00Z", ft: 0 }], new Set([2024]), history.thresholdsNAVD88, 2026);
-    assert.equal(fixture[0].minor, 0);
-    assert.equal(fixture[1].minor, null);
-    assert.equal(fixture[2].minor, null);
+    assert(expected.some(row => !row.available && row.minor === null));
+    assert(expected.some(row => row.available && row.minor === 0 && row.moderate === 0 && row.major === 0));
+    const fixture = makeContext("2026-09-20T12:00:00Z");
+    fixture.resolvePeaksJsonUrl = async () => ({ json: { events: [
+      { t: "2024-06-01T12:00:00Z", ft: 0, historyAgency: "USGS" },
+      { t: "2026-06-01T12:00:00Z", ft: 0, historyAgency: "USGS" },
+    ] } });
+    await fixture.initJSONBackedHistory();
+    assert.deepEqual(Array.from(fixture.YEARS), [2024, 2025, 2026]);
+    assert.deepEqual(Array.from(fixture.annualMinor), [0, null, 0]);
+    assert.deepEqual(Array.from(fixture.annualModerate), [0, null, 0]);
+    assert.deepEqual(Array.from(fixture.annualMajor), [0, null, 0]);
   });
 
-  await test("seasonal history contains genuine USGS years from 2000, without official or Lewes records", () => {
+  await test("seasonal history uses the primary USGS record from 2007, without official or Lewes records", () => {
     const seasonal = context.USGS_HISTORY_NAVD;
     assert(seasonal.length > 0);
-    assert(seasonal.every(row => row.historyAgency === "USGS" && row.y >= 2000 && !row.officialCrestOverride && !row.officialCrestOnly));
-    assert.equal(Math.min(...context.DOY_CACHE.years), 2000);
+    assert.equal(history.site, pipeline.primaryUsgsGaugeId);
+    assert(seasonal.every(row => row.historyAgency === "USGS" && row.y >= 2007 && !row.officialCrestOverride && !row.officialCrestOnly));
+    assert.equal(Math.min(...context.DOY_CACHE.years), 2007);
     const rawLocal = history.events.filter(row => row.historyAgency === "USGS" && !row.officialCrestOverride && !row.officialCrestOnly);
-    assert.deepEqual(Array.from(context.DOY_CACHE.years), [...new Set(rawLocal.map(row => row.y))].sort((a, b) => a - b));
+    assert.deepEqual(Array.from(context.DOY_CACHE.years), [...new Set(rawLocal.map(row => helpers.localParts(row.t).y))].sort((a, b) => a - b));
     const keys = new Set(seasonal.map(crestKey));
     const officialDates = new Set(history.events.filter(row => row.officialCrestOverride).map(row => row.localDate));
     for (const row of rawLocal.filter(row => officialDates.has(row.localDate))) assert(keys.has(crestKey(row)), `Official annual authority erased a measured seasonal crest ${crestKey(row)}`);
@@ -229,7 +232,7 @@ async function main() {
   });
 
   await test("forecast defaults to current plus forecast; all comparison lines remain optional and preserve user choices", () => {
-    const c = makeContext(annual.generatedAtUtc);
+    const c = makeContext(verificationTime);
     c.DOY_CACHE = context.DOY_CACHE;
     c.HIGH_TIDES_NAVD = context.HIGH_TIDES_NAVD;
     c.USGS_HISTORY_NAVD = context.USGS_HISTORY_NAVD;
