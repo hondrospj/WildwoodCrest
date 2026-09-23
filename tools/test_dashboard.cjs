@@ -303,12 +303,12 @@ async function main() {
   });
 
   await test("PETSS parser does not turn no-data into zero; actual zero and tide-plus-surge fallback remain valid", () => {
-    const csv = ["TIME,TWL,TIDE,SURGE", "202609040000,9999.000,9999.000,9999.000", "202609040100,,,", "202609040200,0,0,0", "202609040300,,1.25,0.5", "202609040400,2,,"].join("\n");
+    const csv = ["TIME,TWL,TWL90P,TIDE,SURGE", "202609040000,9999.000,9999.000,9999.000,9999.000", "202609040100,,,,", "202609040200,0,0,0,0", "202609040300,,1.75,1.25,0.5", "202609040400,2,2,,"].join("\n");
     const rows = petss.parseNomadsStationCsv(csv, "8535901");
     assert.deepEqual(rows.map(row => row.twl), [0, 1.75, 2]);
     assert.equal(rows[2].tide, null);
     assert.equal(rows[2].surge, null);
-    assert.throws(() => petss.parseNomadsStationCsv("TIME,TWL,TIDE,SURGE\n202609040000,9999,9999,9999", "8535901"), /0 usable rows/);
+    assert.throws(() => petss.parseNomadsStationCsv("TIME,TWL,TWL90P,TIDE,SURGE\n202609040000,9999,9999,9999,9999", "8535901"), /0 usable rows/);
     install(context, ["normalizePetssJsonToPoints"]);
     const invalid = [null, undefined, "", "  ", "ND", "NaN", 9999].map(value => ({ t: "2026-09-04T12:00:00Z", value, primary: value }));
     for (const shape of [invalid, { points: invalid }, { data: invalid }]) assert.equal(context.normalizePetssJsonToPoints(shape).length, 0, "Missing/invalid forecast values cannot become a zero-ft prediction");
