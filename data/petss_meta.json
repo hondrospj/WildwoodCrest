@@ -6,7 +6,7 @@
   "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/petss/prod/petss.20260924/petss.t12z.csv.tar.gz",
   "model_time_utc": "2026-09-24T12:00:00Z",
   "valid_through_utc": "2026-09-28T18:00:00.000Z",
-  "updated_utc": "2026-09-24T18:30:26.130Z",
+  "updated_utc": "2026-09-24T21:23:19.539Z",
   "n_points": 223,
   "notes": "Forecast chart uses PETSS TWL90p; original ensemble mean remains in source_twl_mean.",
   "scenario_percentiles": {
