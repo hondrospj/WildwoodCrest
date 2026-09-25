@@ -39,6 +39,9 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Verify raw NOAA exceedance selection
+        run: node --test tests/petss-exceedance.test.js
+
       - name: Run PETSS forecast updater
         env:
           PETSS_STID: "8535901"   # station
@@ -55,9 +58,6 @@ jobs:
       - name: Validate forecast and dashboard contracts
         run: node tools/test_dashboard.cjs
 
-      - name: Generate non-operational PETSS research comparison
-        run: python tools/experimental_petss_guidance.py --input data/petss_forecast.json --meta data/petss_meta.json --output data/experimental_petss_guidance.json
-
       - name: Commit & push if changed
         id: forecast_commit
         run: |
@@ -68,7 +68,6 @@ jobs:
 
           # Commit only the forecast products (+ debug header snapshot, optional)
           git add data/petss_forecast.csv data/petss_forecast.json data/petss_meta.json data/petss_station_debug.txt || true
-          git add data/experimental_petss_guidance.json
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
