@@ -1,0 +1,51 @@
+name: Publish PETSS mean data with deployed UI preserved
+on:
+  workflow_dispatch:
+    inputs:
+      ui_ref:
+        description: Existing successful GitHub Pages deployment commit
+        required: true
+        type: string
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out the currently deployed interface and assets
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ui_ref }}
+          persist-credentials: false
+      - name: Check out the corrected forecast data
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: __petss_mean_data
+          persist-credentials: false
+          sparse-checkout: |
+            tools/apply_mean_data_only.py
+            forecast.json
+            forecasts.json
+            data
+          sparse-checkout-cone-mode: false
+      - name: Overlay forecast data without changing the interface
+        run: |
+          python3 __petss_mean_data/tools/apply_mean_data_only.py __petss_mean_data
+          rm -rf __petss_mean_data
+          mkdir _site
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' --exclude='tools' --exclude='tests' ./ _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
+        id: deployment
