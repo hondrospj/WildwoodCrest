@@ -89,7 +89,7 @@ function makeContext(nowIso) {
     }
   });
   vm.runInContext("DOY_SELECTED_YEARS = new Set();", context);
-  install(context, ["getESTParts", "annualYearFromEvent", "countEventsFromListForYear", "buildStationAnnualCountsMap",
+  install(context, ["dashboardGaugeNumber", "getESTParts", "annualYearFromEvent", "countEventsFromListForYear", "buildStationAnnualCountsMap",
     "addCoverageYearValue", "addCoverageYearsFromValue", "inferStationAnnualCoverageYears", "noaaLongTermSourceName", "buildAnnualArrays",
     "normalizePeaksJson", "historicDateKey", "historicRowPriority", "combinedHistoricRowsNavd",
     "isLeapYear", "calIndex365", "monthStarts365", "doyFloodStageDisplayFt", "doyStageLabel",
@@ -302,15 +302,20 @@ async function main() {
     assert(!kinds.some(kind => /forecast/i.test(kind)));
   });
 
-  await test("PETSS parser does not turn no-data into zero; actual zero and tide-plus-surge fallback remain valid", () => {
-    const csv = ["TIME,TWL,TWL90P,TIDE,SURGE", "202609040000,9999.000,9999.000,9999.000,9999.000", "202609040100,,,,", "202609040200,0,0,0,0", "202609040300,,1.75,1.25,0.5", "202609040400,2,2,,"].join("\n");
+  await test("PETSS parser preserves issued means and zero; missing means never use percentile or tide-plus-surge fallbacks", () => {
+    const csv = ["TIME,TWL,TWL90P,TIDE,SURGE", "202609040000,9999.000,9999.000,9999.000,9999.000", "202609040100,,,,", "202609040200,0,0,0,0", "202609040300,,1.75,1.25,0.5", "202609040330,1.75,9,4,0.5", "202609040400,2,2,,"].join("\n");
     const rows = petss.parseNomadsStationCsv(csv, "8535901");
     assert.deepEqual(rows.map(row => row.twl), [0, 1.75, 2]);
+    assert(!rows.some(row => row.src_time === "202609040300"), "A missing issued mean cannot use a percentile or tide-plus-surge fallback");
+    assert.equal(rows[1].source_twl_mean, 1.75);
+    assert.equal(rows[1].source_twl90p, 9);
+    assert.equal(rows[1].tide + rows[1].surge, 4.5, "The issued 1.75-ft mean remains distinct from tide plus surge");
     assert.equal(rows[2].tide, null);
     assert.equal(rows[2].surge, null);
-    assert.throws(() => petss.parseNomadsStationCsv("TIME,TWL,TWL90P,TIDE,SURGE\n202609040000,9999,9999,9999,9999", "8535901"), /0 usable rows/);
+    assert.throws(() => petss.parseNomadsStationCsv("TIME,TWL,TWL90P,TIDE,SURGE\n202609040000,9999,9999,9999,9999", "8535901"), /no usable mean TWL values/);
+    assert.throws(() => petss.parseNomadsStationCsv("TIME,TWL,TWL90P,TIDE,SURGE\n202609040300,,1.75,1.25,0.5", "8535901"), /no usable mean TWL values/);
     install(context, ["normalizePetssJsonToPoints"]);
-    const invalid = [null, undefined, "", "  ", "ND", "NaN", 9999].map(value => ({ t: "2026-09-04T12:00:00Z", value, primary: value }));
+    const invalid = [null, undefined, "", "  ", "ND", "NaN", 9999].map(value => ({ t: "2026-09-04T12:00:00Z", source_twl_mean: value, twl: value }));
     for (const shape of [invalid, { points: invalid }, { data: invalid }]) assert.equal(context.normalizePetssJsonToPoints(shape).length, 0, "Missing/invalid forecast values cannot become a zero-ft prediction");
     assert.equal(context.normalizePetssJsonToPoints([{ t: "2026-09-04T12:00:00Z", twl: 0 }])[0].ft, 0);
   });
