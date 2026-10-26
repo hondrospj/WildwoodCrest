@@ -6,7 +6,7 @@
   "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/petss/prod/petss.20261026/petss.t00z.csv.tar.gz",
   "model_time_utc": "2026-10-26T00:00:00Z",
   "valid_through_utc": "2026-10-30T06:00:00.000Z",
-  "updated_utc": "2026-10-26T06:55:47.774Z",
+  "updated_utc": "2026-10-26T09:42:24.086Z",
   "n_points": 223,
   "forecast_product": "TWL",
   "forecast_statistic": "ensemble_mean",
